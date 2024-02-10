@@ -154,8 +154,6 @@ def prediction():
     bs_month = st.selectbox("Select Month", range(1, 13))
     bs_day = st.number_input("Select Day", min_value=1, max_value=32, value=1)
   
-   
-
 
 
     # st.write("Selected Nepali Date:", f"{bs_month}/{bs_day}/{bs_year}")
@@ -188,12 +186,10 @@ def prediction():
 
     
 
-   
-
 def display_predictions(ad_date, bs_year, bs_month, bs_day, is_holiday):
     api_endpoint = "http://127.0.0.1:5002/"
 
-    selected_model = st.selectbox("Select Model", ["linear_regression", "xgboost", "svm", "knn"])
+    selected_model = st.selectbox("Select Model", ["xgboost"])
     day_of_week_number = get_day_of_week_number(ad_date.strftime("%A"))
 
     # Data to be sent in the request

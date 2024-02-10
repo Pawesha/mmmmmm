@@ -18,66 +18,6 @@ start_time = time.time()
 
 app = Flask(__name__)
 
-# Load preprocessed data
-excel_file_path = "./dataset/output/refined_dataset.xlsx"
-
-df = pd.read_excel(excel_file_path)
-
-df['e_year'] = df['DateTime'].dt.year
-df['e_month'] = df['DateTime'].dt.month
-df['e_day'] = df['DateTime'].dt.day
-
-# Define features and target variable
-features = ['e_year', 'e_month', 'e_day', 'HR', 'DOTW', 'IS_HOLIDAY', 'T2M','seasons_int']
-X = df[features]
-y = df['electricity']
-
-# Split data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-
-def vaue():
-    pass
-
-def train_linear_regression(X_train, y_train):
-    return LinearRegression().fit(X_train, y_train)
-
-def train_knn(X_train, y_train, n_neighbors=5):
-    n_neighbors = min(n_neighbors, len(X_train))
-    return KNeighborsRegressor(n_neighbors=n_neighbors).fit(X_train, y_train)
-
-def train_xgboost(X_train, y_train):
-    return XGBRegressor().fit(X_train, y_train)
-
-
-def predict(model, X_test):
-    return model.predict(X_test)
-
-def calculate_metrics(y_true, y_pred):
-    mse = mean_squared_error(y_true, y_pred)
-    rmse = sqrt(mse)
-    r_squared = r2_score(y_true, y_pred)
-    return mse, rmse, r_squared
-
-def evaluate_models(models, X_test, y_test):
-    results = {}
-    for name, model in models.items():
-        y_pred = predict(model, X_test)
-        mse, rmse, r_squared = calculate_metrics(y_test, y_pred)
-        results[name] = {'MSE': mse, 'RMSE': rmse, 'r2_score': r_squared}
-    return results
-
-def save_true_predicted_values(models, X_test, y_test, file_path="./dataset/output/true.xlsx"):
-    result_df = pd.DataFrame({'True': y_test})
-    for name, model in models.items():
-        y_pred = predict(model, X_test)
-        result_df[f'{name}_P'] = y_pred
-    result_df.to_excel(file_path, index=False)
-
-# Train linear regression, KNN, XGBoost models
-models = {}
-models['linear_regression'] = train_linear_regression(X_train,y_train)
-models['knn'] = train_knn(X_train, y_train)
-models['xgboost'] = train_xgboost(X_train, y_train)
 
 def validate_input(data):
     required_keys = ['bs_year', 'bs_month', 'bs_day', 'day_of_week_number', 'is_holiday', 'selected_model', 'temperatures']
@@ -112,7 +52,6 @@ def predict_demand():
             return jsonify({'error': error_message}), 400
         data = request.json  # Get the JSON data from the request
         app.logger.info(f"Received data: {data}")
-
 
         # Extract data
         day_of_week_number = data['day_of_week_number']
@@ -167,11 +106,7 @@ def predict_demand():
 if __name__ == '__main__':
     app.run(debug=True, port=5003)
 
-# # Perform cross-validation with the best model
-# k_fold = KFold(n_splits=5, shuffle=True, random_state=42)
-# cross_val_scores = cross_val_score(models['svm'], X_train, y_train, cv=k_fold, scoring='neg_mean_squared_error', n_jobs=-1)
-# print("Cross-Validation Scores:", -cross_val_scores)
-# print("Mean Cross-Validation RMSE:", -cross_val_scores.mean())
+
 
 # Evaluate models and store true and predicted values in an Excel file
 results = evaluate_models(models, X_test, y_test)

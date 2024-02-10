@@ -157,7 +157,7 @@ def get_day_of_week_number(day_of_week):
  
 def menu():
     st.write("Welcome to prediction!")
-    selected_model = st.selectbox("Select Model", ["linear_regression", "xgboost", "svm", "knn"])
+    selected_model = st.selectbox("Select Model", [ "xgboost"])
     start_date_bs = st.text_input("Enter Start Date (BS) in 'YYYY-MM-DD' format:")
     end_date_bs = st.text_input("Enter End Date (BS) in 'YYYY-MM-DD' format:")
  
@@ -253,9 +253,6 @@ def display_aggregated_graph():
     except Exception as e:
         st.error(f"Error displaying aggregated graph: {str(e)}")
     
- 
- 
- 
 import plotly.express as px
 import plotly.graph_objs as go
  

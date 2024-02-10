@@ -50,8 +50,6 @@ def predict_temperature():
     # Make predictions for the specified date and hours
     # Make predictions for the specified date and hours
     predicted_temperatures = model.predict(prediction_data)
-
-
     response = {'message': f'Temperature predictions received from the backend for BS Date: {bs_year}/{bs_month}/{bs_day}:',
             'predictions': [{'hour': hour, 'temperature': "{:.2f}".format(temp)} for hour, temp in zip(prediction_hours, predicted_temperatures)]}
 

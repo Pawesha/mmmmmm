@@ -36,7 +36,6 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 def vaue():
      pass
 
-
 def train_linear_regression(X_train, y_train):
     return LinearRegression().fit(X_train, y_train)
 

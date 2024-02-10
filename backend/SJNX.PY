@@ -18,6 +18,45 @@ start_time = time.time()
 
 app = Flask(__name__)
 
+# Load preprocessed data
+excel_file_path = "./dataset/output/refined_dataset.xlsx"
+
+df = pd.read_excel(excel_file_path)
+
+df['e_year'] = df['DateTime'].dt.year
+df['e_month'] = df['DateTime'].dt.month
+df['e_day'] = df['DateTime'].dt.day
+
+# Define features and target variable
+features = ['e_year', 'e_month', 'e_day', 'HOUR', 'DOTW', 'IS_HOLIDAY', 'T2M','seasons_int']
+X = df[features]
+y = df['electricity']
+
+# Split data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+
+def vaue():
+    pass
+
+def train_linear_regression(X_train, y_train):
+    return LinearRegression().fit(X_train, y_train)
+
+def train_knn(X_train, y_train, n_neighbors=5):
+    n_neighbors = min(n_neighbors, len(X_train))
+    return KNeighborsRegressor(n_neighbors=n_neighbors).fit(X_train, y_train)
+
+def train_xgboost(X_train, y_train):
+    return XGBRegressor().fit(X_train, y_train)
+
+
+def predict(model, X_test):
+    return model.predict(X_test)
+
+# Train linear regression, KNN, XGBoost models
+models = {}
+models['linear_regression'] = train_linear_regression(X_train,y_train)
+models['knn'] = train_knn(X_train, y_train)
+models['xgboost'] = train_xgboost(X_train, y_train)
 
 def validate_input(data):
     required_keys = ['bs_year', 'bs_month', 'bs_day', 'day_of_week_number', 'is_holiday', 'selected_model', 'temperatures']
@@ -106,22 +145,3 @@ def predict_demand():
 if __name__ == '__main__':
     app.run(debug=True, port=5003)
 
-
-
-# Evaluate models and store true and predicted values in an Excel file
-results = evaluate_models(models, X_test, y_test)
-df_evaluation_metric = pd.DataFrame(results)
-print(df_evaluation_metric)
-
-# Save the DataFrame to an Excel file
-df_evaluation_metric.to_excel("./dataset/output//metrics.xlsx", index=True)
-
-# Save true and predicted values to an Excel file
-save_true_predicted_values(models, X_test, y_test)
-
-print('Last part executed.')
-
-# Last processing time was printed
-end_time = time.time()
-elapsed_time = end_time - start_time
-print(f"Processing time: {elapsed_time} seconds")

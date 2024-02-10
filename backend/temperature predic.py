@@ -5,8 +5,8 @@ from sklearn.ensemble import RandomForestRegressor
 app = Flask(__name__)
 
 # Load your Excel file into a pandas DataFrame
-file_path = '/Users/paweshashrestha/Downloads/major_final 2/temppppp/temperature_only.xlsx'
-df = pd.read_excel(file_path, engine='openpyxl')  # Specify the engine, use 'xlrd' if needed
+file_path = "./dataset/input/temperature_only.xlsx"
+df = pd.read_excel(file_path, engine='openpyxl')  
 
 df['datetime'] = pd.to_datetime(df[['YEAR', 'MONTH', 'DAY', 'HOUR']], errors='coerce')
 df['hour_of_day'] = df['datetime'].dt.hour
@@ -54,8 +54,6 @@ def predict_temperature():
 
     response = {'message': f'Temperature predictions received from the backend for BS Date: {bs_year}/{bs_month}/{bs_day}:',
             'predictions': [{'hour': hour, 'temperature': "{:.2f}".format(temp)} for hour, temp in zip(prediction_hours, predicted_temperatures)]}
-
- 
 
 
     print(response)

@@ -4,7 +4,8 @@ import streamlit as st
 import plotly.graph_objs as go
  
 # Load data from Excel file
-df = pd.read_excel("/Users/paweshashrestha/Downloads/new/refined_data_all (1).xlsx")
+filepath= "../dataset/output/refined_dataset.xlsx"
+df = pd.read_excel(filepath)
  
 # Mapping of numeric representation of Nepali months to their names
 nepali_month_names = {

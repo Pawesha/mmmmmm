@@ -8,7 +8,6 @@ from prediction import prediction
 from about import about
 from menu import menu
  
- 
 user_emoji='⚡'
  
 st.set_page_config(page_title='Electricity Demand Forecast With Machine Learning', page_icon='⚡')

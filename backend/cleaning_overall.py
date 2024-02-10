@@ -5,7 +5,7 @@ from scipy.interpolate import CubicSpline
 
 # Cleaning process without outlier removal
 
-file_path = "/Users/paweshashrestha/Downloads/major_final 2/final dataset.xls"
+file_path = "./dataset/input/original dataset.xlsx"
 df = pd.read_excel(file_path) # Loading excel file
 
 # Dropping duplicates
@@ -42,15 +42,12 @@ for column_name in consumption:
 
 print('Interpolation done')
 
-
-# Convert the 'YEAR' column to string in "yyyy" format before saving
-df_all['YEAR'] = df_all['YEAR'].astype(str)
+# # Convert the 'YEAR' column to string in "yyyy" format before saving
+# df_all['YEAR'] = df_all['YEAR'].astype(str)
 
 # Save the DataFrame after all steps before outlier removal
-excel_file_path_all = ("/Users/paweshashrestha/Downloads/major_final 2/cleaned files/refined_data_all.xlsx")
+excel_file_path_all = ("./dataset/output/refined_dataset.xlsx")
 df_all.to_excel(excel_file_path_all, index=False)
-
-
 
 # Box plot before outlier removal
 columns_names = ['electricity']
@@ -75,8 +72,6 @@ for column_name in consumption:
     # Filter out outliers
     df_all = df_all[(df_all[column_name] >= lower_bound) & (df_all[column_name] <= upper_bound)]
     
-
-
 # Box plot after outlier removal
 for column_name in columns_names:
     plt.subplot(1, 2, 2)
@@ -87,7 +82,7 @@ plt.tight_layout()
 plt.show()
 
 # Save cleaned file after outlier removal
-excel_file_path_outlier_removed = ("/Users/paweshashrestha/Downloads/major_final 2/cleaned files/refined_data_outlier_removed.xlsx")
+excel_file_path_outlier_removed = ("./dataset/output/refined_data_outlier_removed.xlsx")
 df_all.to_excel(excel_file_path_outlier_removed, index=False)
 
 # Check if the code executed successfully

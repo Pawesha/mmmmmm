@@ -14,7 +14,7 @@ user_emoji='⚡'
 # st.set_page_config(page_title='Electricity Demand Forecast With Machine Learning', page_icon='⚡')
  
 def main():
-    st.title("Electricity Demand Forecast")
+    st.title("Electricity Consumption Analysis and Prediction")
  
     # Initialize session variable for login status and user email
     if "logged_in" not in st.session_state:
@@ -40,7 +40,7 @@ def main():
         # Sidebar navigation for the dashboard
         with st.sidebar:        
             # Use st.markdown to display the emoji
-            st.markdown(f"# {user_emoji} Electricity Demand Forecast with ML ")
+            st.markdown(f"# {user_emoji} Electricity Consumption Analysis and Prediction")
  
             app = option_menu(
                 menu_title='',

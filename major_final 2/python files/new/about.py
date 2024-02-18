@@ -2,18 +2,10 @@
 import streamlit as st
  
 def about():
-    st.title("About Our Project")
+    st.title("About ")
  
     st.write(
-        "Welcome to our electricity demand prediction system! In today's rapidly evolving world, the need for accurate electricity demand forecasting has become paramount for sustainable development. Our system integrates advanced machine learning models – linear regression, KNN, XGBoost, and SVM – to predict electricity demand with precision.\n\n"
-        "**Key Features:**\n\n"
-        "- **Diverse Model Ensemble:** We employ a blend of machine learning algorithms for robust predictions.\n"
-        "- **Data Quality Assurance:** Our system ensures high-quality data through effective pre-processing techniques, including cubic spline interpolation and outlier removal.\n"
-        "- **Performance Metrics:** The system is evaluated using metrics such as Mean Square Error (MSE), Root Mean Square Error (RMSE), and r2 score, providing insights into its accuracy and reliability.\n"
-        "- **Decision XGBoost:** After thorough comparison, XGBoost emerges as the optimal algorithm, boasting impressive MSE, RMSE, and R2 score values of 0.03, 0.17, and 0.95, respectively.\n\n"
-        "**User-Friendly Interface:**\n\n"
-        "Our interface is designed with you in mind, making it easy for individuals and businesses to make informed decisions, reduce energy costs, and contribute to a sustainable future.\n\n"
-        "Explore the power of accurate electricity demand prediction with our user-friendly system!"
+        "In response to the escalating demand for electricity in our rapidly advancing world, the development of the Electricity Consumption Analysis and Prediction System becomes pivotal. With a focus on accurate forecasting for effective energy resource planning, the system integrates diverse algorithms such as KNN, linear regression, SVM, and XGBoost. Following thorough data cleaning, feature engineering, and integration processes, XGBoost stands out as the optimal model, ensuring superior accuracy in predicting electricity consumption. The system enhances user understanding through intuitive visualization of analyzed data and model predictions using charts and graphs. Furthermore, it provides predictions for electricity consumption on a monthly, daily, and yearly basis, contributing to efficient energy management."
     )
  
 def main():

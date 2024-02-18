@@ -15,6 +15,22 @@ def convert_to_ad_date(date_str):
         return ad_date
     except ValueError:
         raise ValueError("Invalid date format. Please use 'YYYY-MM-DD' format.")
+def calculate_kpis(predictions_data):
+    # Calculate KPIs from predictions_data DataFrame
+    total_demand = predictions_data['demand'].sum()
+    average_demand = predictions_data['demand'].mean()
+    max_demand = predictions_data['demand'].max()
+    min_demand = predictions_data['demand'].min()
+ 
+    return total_demand, average_demand, max_demand, min_demand
+ 
+def display_kpis(total_demand, average_demand, max_demand, min_demand):
+    st.subheader("Key Performance Indicators (KPIs)")
+    st.info(f"Total Demand: {total_demand:.2f} megawatt")
+    st.info(f"Average Demand: {average_demand:.2f} megawatt")
+    st.info(f"Maximum Demand: {max_demand:.2f} megawatt")
+    st.info(f"Minimum Demand: {min_demand:.2f} megawatt")
+    
  
 def get_holidays(year):
     holidays_data = {
@@ -141,9 +157,16 @@ def menu():
  
     if st.button("Submit"):
         try:
+            combined_data = pd.read_excel("/Users/paweshashrestha/Downloads/major_final 2/python files/new/combined_predictions.xlsx")
+ 
             excel_filename = "combined_predictions.xlsx"
             if os.path.exists(excel_filename):
                 os.remove(excel_filename)
+                        # Filter data based on selected date range
+            mask = (pd.to_datetime(combined_data['date']) >= start_date_bs) & \
+                   (pd.to_datetime(combined_data['date']) <= end_date_bs)
+            filtered_data = combined_data.loc[mask]
+ 
             for current_date in pd.date_range(start=start_date_bs, end=end_date_bs):
                 bs_year, bs_month, bs_day = current_date.year, current_date.month, current_date.day
                 day_of_week = current_date.strftime("%A")
@@ -151,6 +174,12 @@ def menu():
                 is_holiday_today, _ = is_selected_date_holiday(holidays, current_date)
                 day_of_week_number = get_day_of_week_number(day_of_week)
                 display_predictions(current_date, bs_year, bs_month, bs_day, is_holiday_today, selected_model)
+            # # Calculate KPIs based on the selected date range
+            # total_demand, average_demand, max_demand, min_demand = calculate_kpis(filtered_data)
+ 
+            # # Display KPIs
+            # display_kpis(total_demand, average_demand, max_demand, min_demand)
+ 
             display_aggregated_graph_line()
             display_aggregated_graph_bar()
  
@@ -255,7 +284,8 @@ def send_to_backend(day_of_week_number, is_holiday, ad_date, bs_year, bs_month, 
         else:
             st.write(f"Failed to send data. API responded with status code: {response.status_code}")
     except Exception as e:
-        st.error(f"Error sending data to the backend: {str(e)}")
+        # st.error(f"Error sending data to the backend: {str(e)}")
+        print("Error sending data to the backend:" ,e)
  
 if __name__ == "__main__":
     menu()

@@ -9,7 +9,7 @@ def run_flask_app2():
 
 
 def run_streamlit_app():
-    subprocess.run(["/usr/local/bin/python3", "-m", "streamlit", "run", "/Users/paweshashrestha/Downloads/major_final 2/python files/new/dashboard.py"])
+    subprocess.run(["/usr/local/bin/python3", "-m", "streamlit", "run", "/Users/paweshashrestha/Downloads/major_final 2/python files/new/main.py"])
 
 if __name__ == "__main__":
     p1 = multiprocessing.Process(target=run_flask_app1)

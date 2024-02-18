@@ -3,18 +3,15 @@ import streamlit as st
 import nepali_datetime
 from datetime import datetime, timedelta
 import requests
-from dataset import dataset
 from nepali_datetime import date as nepali_date
 import plotly.express as px
 import plotly.graph_objs as go
-
-
-
+ 
 def convert_to_ad_date(bs_year, bs_month, bs_day):
     bs_date = nepali_datetime.date(bs_year, bs_month, bs_day)
     ad_date = bs_date.to_datetime_date()
     return ad_date
-
+ 
 def get_holidays(year):
     # Provided holiday data
     
@@ -104,8 +101,8 @@ def get_holidays(year):
     {"name": "Christmas Eve", "date": "2024-12-24"},
     {"name": "Christmas Day", "date": "2024-12-25"}
 ]
-
-    } 
+ 
+    }
     try:
         current_date = datetime(year, 1, 1)
         while current_date.year == year:
@@ -116,23 +113,37 @@ def get_holidays(year):
                     # You can add more details if needed, like 'observed', 'public', 'country', etc.
                 })
             current_date += timedelta(days=1)
-
+ 
         return holidays_data['holidays']
-
+ 
     except Exception as e:
         st.error(f"Error fetching holidays: {str(e)}")
         return []    
     
+def calculate_kpis(predictions_data):
+    # Calculate KPIs from predictions_data DataFrame
+    total_demand = predictions_data['demand'].sum()
+    average_demand = predictions_data['demand'].mean()
+    max_demand = predictions_data['demand'].max()
+    min_demand = predictions_data['demand'].min()
 
+    return total_demand, average_demand, max_demand, min_demand
+
+def display_kpis(total_demand, average_demand, max_demand, min_demand):
+    st.subheader("Key Performance Indicators (KPIs)")
+    st.info(f"Total Demand: {total_demand:.2f} megawatt")
+    st.info(f"Average Demand: {average_demand:.2f} megawatt")
+    st.info(f"Maximum Demand: {max_demand:.2f} megawatt")
+    st.info(f"Minimum Demand: {min_demand:.2f} megawatt")
     
-
+ 
 def is_selected_date_holiday(holidays, selected_date):
     selected_date_str = selected_date.strftime("%Y-%m-%d")
     for holiday in holidays:
         if holiday.get('date') == selected_date_str:
             return True, holiday.get('name')
     return False, None
-
+ 
 def get_day_of_week_number(day_of_week):
     # Map day of the week to a number (1 to 7)
     day_number_mapping = {
@@ -145,37 +156,38 @@ def get_day_of_week_number(day_of_week):
         'Sunday': 1,
     }
     return day_number_mapping.get(day_of_week, 0)
-
+ 
 def prediction():
     st.write("Welcome to prediction!")
-
+ 
     # Take input for Nepali month, day, and year
     bs_year = st.number_input("Enter Nepali Year", min_value=1970, max_value=2100, value=2078)
     bs_month = st.selectbox("Select Month", range(1, 13))
     bs_day = st.number_input("Select Day", min_value=1, max_value=32, value=1)
+    
   
    
-
-
-
+ 
+ 
+ 
     # st.write("Selected Nepali Date:", f"{bs_month}/{bs_day}/{bs_year}")
-
-
+ 
+ 
     ad_date = convert_to_ad_date(bs_year, bs_month, bs_day)
     # st.write("Equivalent English Date:", ad_date)
-
+ 
    
     day_of_week = ad_date.strftime("%A")
     # st.write(f"Day of the Week for English Date: {day_of_week}")
-
+ 
     holidays = get_holidays(ad_date.year)
-
-
+ 
+ 
     is_holiday_today, holiday_name_today = is_selected_date_holiday(holidays, ad_date)
-
+ 
     # Convert day of the week to a number
     day_of_week_number = get_day_of_week_number(day_of_week)
-
+ 
     if is_holiday_today:
         # st.write(f"The specified date ({day_of_week}) is a holiday! It's {holiday_name_today}.")
         display_predictions(ad_date, bs_year, bs_month, bs_day, 1)
@@ -184,42 +196,45 @@ def prediction():
     else:
         # st.write(f"The specified date ({day_of_week}) is not a holiday.")
         display_predictions(ad_date, bs_year, bs_month, bs_day, 0)
-
-
     
-
+    
+    
+ 
+ 
+    
+ 
    
-
+ 
 def display_predictions(ad_date, bs_year, bs_month, bs_day, is_holiday):
     api_endpoint = "http://127.0.0.1:5002/"
-
-    selected_model = "xgboost"
+ 
+    selected_model  = "xgboost"
     day_of_week_number = get_day_of_week_number(ad_date.strftime("%A"))
-
+ 
     # Data to be sent in the request
     data = {
         "day_of_week_number": day_of_week_number,
-        "is_holiday": is_holiday, 
+        "is_holiday": is_holiday,
         "ad_date": ad_date.strftime("%Y-%m-%d"),
         "bs_year": bs_year,
         "bs_month": bs_month,
         "bs_day": bs_day
     }
-
+ 
     response = requests.post(api_endpoint, json=data)
-
+ 
     if response.status_code == 200:
         predictions = response.json().get('predictions', [])
         for prediction in predictions:
           temperatures = round(float(prediction['temperature']), 2)
         #   st.write(f"Predicted Temperature: {temperatures}")
-
-
-
-
         send_to_backend(day_of_week_number, is_holiday, ad_date, bs_year, bs_month, bs_day, predictions, selected_model)
+        
     else:
         st.write(f"Failed to get temperature predictions. API responded with status code: {response.status_code}")
+   
+
+  
 
 
 
@@ -227,8 +242,9 @@ def display_predictions(ad_date, bs_year, bs_month, bs_day, is_holiday):
 
 
 
+ 
 def send_to_backend(day_of_week_number, is_holiday, ad_date, bs_year, bs_month, bs_day, predictions, selected_model):
-
+ 
     api_endpoint = "http://127.0.0.1:5003/predict_demand"
  
     # Extract the predicted temperatures
@@ -258,15 +274,17 @@ def send_to_backend(day_of_week_number, is_holiday, ad_date, bs_year, bs_month, 
        # Extract the response data
             response_data = response.json()
             
+
             predictions_data = response_data.get('predictions', [])
-            
+          
+
             # Create a DataFrame for easier plotting
             df_predictions = pd.DataFrame(predictions_data)
             
             # Convert 'hour' column to numerical values
             df_predictions['hour'] = pd.to_numeric(df_predictions['hour'])
             
-
+ 
                         # Convert 'hour' column to numerical values
             df_predictions['hour'] = pd.to_numeric(df_predictions['hour'])
             # Plot the line graph using plotly
@@ -275,14 +293,24 @@ def send_to_backend(day_of_week_number, is_holiday, ad_date, bs_year, bs_month, 
             # Plot the bar chart for demand predictions
             fig_bar = px.bar(df_predictions, x='hour', y='demand', title='Demand Predictions (Bar Chart)')
             st.plotly_chart(fig_bar)
+                        # Plot the area plot using plotly
+            # fig_area = px.area(df_predictions, x='hour', y='demand', title='Demand Predictions (Area Plot)')
+            # st.plotly_chart(fig_area)
+            # Calculate KPIs
+            total_demand, average_demand, max_demand, min_demand = calculate_kpis(df_predictions)
 
+    # Display KPIs
+            display_kpis(total_demand, average_demand, max_demand, min_demand)
+            
+           
+ 
         else:
             st.write(f"Failed to send data. API responded with status code: {response.status_code}")
     except Exception as e:
         st.error(f"Error sending data to the backend: {str(e)}")
-
-
-
-
+ 
 if __name__ == "__main__":
     prediction()
+
+
+ 
